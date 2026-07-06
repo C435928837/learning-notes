@@ -1,4 +1,4 @@
-package com.cloudmall.demo;
+package com.cloudmall.demo.javaBasics;
 
 public class MiniHashMap {
     private Node[] table;

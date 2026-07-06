@@ -1,4 +1,4 @@
-package com.cloudmall.demo;
+package com.cloudmall.demo.javaBasics;
 
 import java.util.HashSet;
 import java.util.Set;

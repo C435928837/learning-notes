@@ -1,4 +1,4 @@
-package com.cloudmall.demo;
+package com.cloudmall.demo.javaBasics;
 
 import java.util.Map;
 import java.util.TreeMap;
