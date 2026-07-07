@@ -85,7 +85,7 @@ final Node<K,V>[] resize() {
 }
 
 ## resize 流程理解
-capacity代表hashmap的长度，threshold代表hashmap的扩容阈值（threshold = capacity * loadFactor），hashmap初始化默认长度是16，当capacity大于threshold则触发扩容，扩容是做2倍扩容，扩容不是把每个节点都重新hash一遍，根据(e.hash & oldCap) == 0判断，等于0则保持原来的位置，不等于0则移到原来坐标+oldCap的位置。
+capacity代表hashmap的长度，threshold代表hashmap的扩容阈值（threshold = capacity * loadFactor），hashmap初始化默认长度是16，当size > threshold时触发扩容，扩容是做2倍扩容，扩容不是把每个节点都重新hash一遍，根据(e.hash & oldCap) == 0判断，等于0则保持原来的位置，不等于0则移到原来坐标+oldCap的位置。
 
 ## putVal 源码解读
 final V putVal(int hash, K key, V value, boolean onlyIfAbsent,boolean evict) {
@@ -154,3 +154,52 @@ static final int hash(Object key) {
 
 ## hash 方法理解
 减少hash冲突
+
+## treeifyBin 方法源码解读
+final void treeifyBin(Node<K,V>[] tab, int hash) {
+	int n, index; Node<K,V> e;
+	if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
+		//链表长度小于64，做扩容处理
+		resize();
+	else if ((e = tab[index = (n - 1) & hash]) != null) {
+		//桶内已经有对象且长度已经超过64，就转成红黑树
+		TreeNode<K,V> hd = null, tl = null;
+		do {
+			//遍历桶内对象，放到树的节点上
+			TreeNode<K,V> p = replacementTreeNode(e, null);
+			if (tl == null)
+				hd = p;
+			else {
+				p.prev = tl;
+				tl.next = p;
+			}
+			tl = p;
+		} while ((e = e.next) != null);
+		if ((tab[index] = hd) != null)
+			hd.treeify(tab);
+	}
+}
+
+## treeifyBin 方法理解
+当桶内链表长度达到8后，会调用treeifyBin。但treeifyBin不一定直接树化。如果table.length < 64，会优先resize；只有table.length >= 64 时，才会把该桶里的链表转换成红黑树。
+
+## afterNodeInsertion 方法源码解读
+void afterNodeInsertion(boolean evict) { // possibly remove eldest
+	LinkedHashMap.Entry<K,V> first;
+	if (evict && (first = head) != null && removeEldestEntry(first)) {
+		K key = first.key;
+		removeNode(hash(key), key, null, false, true);
+	}
+}
+
+## afterNodeInsertion 方法理解
+afterNodeInsertion在HashMap中是空实现，是给LinkedHashMap扩展用的钩子方法。LinkedHashMap会在插入新节点后判断是否需要删除最老节点，常见用途是实现LRU。它不是用来保证key唯一的，key唯一是在putVal中处理的。
+
+## 观察第一次 put、第二次 put、第十三次 put
+Map<String, String> map = new HashMap<>();
+for(int i=1;i<=13;i++){
+	map.put("name"+i, "cloudmall"+i);
+}
+第一次put：初始化hashmap长度，正常存放值
+第二次put：没有hash冲突，正常存放值
+第十三次put：会触发扩容，是因为默认threshold是12
