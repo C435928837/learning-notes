@@ -1,4 +1,4 @@
-package com.cloudmall.demo.designPattern;
+package com.cloudmall.demo.designPattern.single;
 
 public class SingletonDemo {
 
