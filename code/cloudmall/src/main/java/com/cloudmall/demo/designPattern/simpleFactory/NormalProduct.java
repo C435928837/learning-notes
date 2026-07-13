@@ -15,6 +15,9 @@ public class NormalProduct implements Product{
     public int getPrice() {
         return this.price;
     }
+    public String getCode() {
+        return this.code;
+    }
 
     @Override
     public void changePrice(int price) {
