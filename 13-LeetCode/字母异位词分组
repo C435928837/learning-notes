@@ -1,0 +1,28 @@
+## 给你一个字符串数组，请你将 字母异位词 组合在一起。可以按任意顺序返回结果列表。
+
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        Map<String, List<String>> groupMap = new HashMap<>();
+
+        for (String str : strs) {
+            int[] counts = new int[26];
+
+            for (char c : str.toCharArray()) {
+                counts[c - 'a']++;
+            }
+
+            StringBuilder keyBuilder = new StringBuilder();
+            for (int count : counts) {
+                keyBuilder.append('#').append(count);
+            }
+
+            String key = keyBuilder.toString();
+
+            groupMap
+                    .computeIfAbsent(key, ignored -> new ArrayList<>())
+                    .add(str);
+        }
+
+        return new ArrayList<>(groupMap.values());
+    }
+}
