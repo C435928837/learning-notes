@@ -11,7 +11,8 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public String getProduct(String productId){
+    public String getProduct(String productId) throws InterruptedException {
+        Thread.sleep(3000);
         return productRepository.getProductById(productId);
     }
 
