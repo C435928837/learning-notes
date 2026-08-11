@@ -1,0 +1,9 @@
+### 商品编码重复
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "productCode": "P002",
+  "productName": "重复商品",
+  "price": 99.00
+}
