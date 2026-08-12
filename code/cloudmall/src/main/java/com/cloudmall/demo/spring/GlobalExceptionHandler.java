@@ -1,6 +1,7 @@
 package com.cloudmall.demo.spring;
 
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,6 +34,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(e.getStatus())
                 .body(ApiResponse.failure(e.getCode(), e.getMessage()));
+    }
+
+    /**
+     * 先查询再插入只能改善提示，数据库唯一约束才是并发场景下的最终兜底。
+     */
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDuplicateKey(
+            DuplicateKeyException e
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.failure(40901, "商品编码已存在"));
     }
 
     @ExceptionHandler(Exception.class)
