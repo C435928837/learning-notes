@@ -43,4 +43,38 @@ public class CloudMallApplication {
             System.out.println("P001 库存：" + stock);
         };
     }
+
+    @Bean
+    CommandLineRunner indexDemo(JdbcTemplate jdbcTemplate) {
+        return args -> {
+            String hitIndexPlan = jdbcTemplate.queryForObject(
+                    """
+                    EXPLAIN
+                    SELECT order_no, status, created_at
+                    FROM user_orders
+                    WHERE user_id = 1001
+                      AND status = 'PAID'
+                    ORDER BY created_at DESC
+                    """,
+                    String.class
+            );
+
+            String missLeftPrefixPlan = jdbcTemplate.queryForObject(
+                    """
+                    EXPLAIN
+                    SELECT order_no, status, created_at
+                    FROM user_orders
+                    WHERE status = 'PAID'
+                    ORDER BY created_at DESC
+                    """,
+                    String.class
+            );
+
+            System.out.println("命中联合索引的计划：");
+            System.out.println(hitIndexPlan);
+
+            System.out.println("未遵守最左前缀的计划：");
+            System.out.println(missLeftPrefixPlan);
+        };
+    }
 }
