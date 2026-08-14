@@ -45,6 +45,24 @@ public class CloudMallApplication {
     }
 
     @Bean
+    CommandLineRunner conditionalStockDemo(OrderService orderService, JdbcTemplate jdbcTemplate) {
+        return args -> {
+            boolean firstDeduction = orderService.deductStock("P002");
+            boolean secondDeduction = orderService.deductStock("P002");
+
+            Integer stock = jdbcTemplate.queryForObject(
+                    "SELECT stock FROM product_stock WHERE product_id = ?",
+                    Integer.class,
+                    "P002"
+            );
+
+            System.out.println("第一次条件扣库存：" + firstDeduction);
+            System.out.println("第二次条件扣库存：" + secondDeduction);
+            System.out.println("条件扣减后的 P002 库存：" + stock);
+        };
+    }
+
+    @Bean
     CommandLineRunner indexDemo(JdbcTemplate jdbcTemplate) {
         return args -> {
             String hitIndexPlan = jdbcTemplate.queryForObject(

@@ -15,6 +15,7 @@ CREATE TABLE products (
 );
 
 INSERT INTO product_stock(product_id, stock) VALUES ('P001', 10);
+INSERT INTO product_stock(product_id, stock) VALUES ('P002', 1);
 
 CREATE TABLE user_orders (
                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
