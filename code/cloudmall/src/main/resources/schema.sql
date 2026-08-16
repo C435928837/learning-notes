@@ -1,21 +1,38 @@
-CREATE TABLE product_stock (
-                               product_id VARCHAR(20) PRIMARY KEY,
-                               stock INT NOT NULL
-);
-
-CREATE TABLE orders (
-                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                        product_id VARCHAR(20) NOT NULL
-);
-
 CREATE TABLE products (
                           product_code VARCHAR(20) PRIMARY KEY,
                           product_name VARCHAR(50) NOT NULL,
                           price DECIMAL(10, 2) NOT NULL
 );
 
-INSERT INTO product_stock(product_id, stock) VALUES ('P001', 10);
-INSERT INTO product_stock(product_id, stock) VALUES ('P002', 1);
+CREATE TABLE product_stock (
+                               product_id VARCHAR(20) PRIMARY KEY,
+                               available_stock INT NOT NULL,
+                               locked_stock INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE orders (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        order_no VARCHAR(32) NOT NULL UNIQUE,
+                        user_id BIGINT NOT NULL,
+                        product_id VARCHAR(20) NOT NULL,
+                        product_name VARCHAR(50) NOT NULL,
+                        product_price DECIMAL(10, 2) NOT NULL,
+                        quantity INT NOT NULL,
+                        total_amount DECIMAL(10, 2) NOT NULL,
+                        status VARCHAR(20) NOT NULL,
+                        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_orders_user_created_id
+    ON orders(user_id, created_at, id);
+
+INSERT INTO products(product_code, product_name, price)
+VALUES ('P001', '机械键盘', 299.00);
+
+INSERT INTO product_stock(product_id, available_stock, locked_stock)
+VALUES
+    ('P001', 10, 0),
+    ('P002', 1, 0);
 
 CREATE TABLE user_orders (
                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
